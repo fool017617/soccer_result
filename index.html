@@ -431,8 +431,8 @@ const MATCHES = [
     t1:'南アフリカ🇿🇦',                       c1:'yes', s1:'A組2位 ◎',
     t2:'カナダ🇨🇦',                           c2:'yes', s2:'B組2位 ◎', jp:false },
   { id:74, no:'M74', side:'L', pos:1, date:'6/30',
-    t1:'ドイツ🇩🇪',                           c1:'yes', s1:'E組1位 ◎',
-    t2:'スウェ or パラ or エク or ボスニア',   c2:'est', s2:'3位通過チーム（勝ち点4組が最有力）', jp:false },
+    t1:'ドイツ🇩🇪',     c1:'yes', s1:'E組1位 ◎',
+    t2:'ボスニア or パラ or スウェ', c2:'est', s2:'3位確定済(B/D/F)いずれか★', jp:false },
   { id:75, no:'M75', side:'L', pos:2, date:'6/30',
     t1:'オランダ🇳🇱',                         c1:'yes', s1:'F組1位（確定）',
     t2:'モロッコ🇲🇦',                         c2:'yes', s2:'C組2位（確定）', jp:false },
@@ -440,23 +440,23 @@ const MATCHES = [
     t1:'ブラジル🇧🇷',                         c1:'yes', s1:'C組1位（確定）',
     t2:'日本🇯🇵',                             c2:'yes', s2:'F組2位（確定）◎', jp:true },
   { id:77, no:'M77', side:'L', pos:4, date:'7/1',
-    t1:'フランス🇫🇷',                         c1:'yes', s1:'I組1位（確定・3戦全勝）',
-    t2:'スウェ or パラ or エク or ボスニア',   c2:'est', s2:'3位通過チーム', jp:false },
+    t1:'フランス🇫🇷',   c1:'yes', s1:'I組1位（確定・3戦全勝）',
+    t2:'パラ or スウェ', c2:'est', s2:'3位確定済(D/F)いずれか★', jp:false },
   { id:78, no:'M78', side:'L', pos:5, date:'7/1',
-    t1:'メキシコ🇲🇽',                         c1:'yes', s1:'A組1位 ◎',
-    t2:'スウェ or パラ or エク or ボスニア',   c2:'est', s2:'3位通過チーム', jp:false },
+    t1:'メキシコ🇲🇽',   c1:'yes', s1:'A組1位 ◎',
+    t2:'エク or スウェ', c2:'est', s2:'3位確定済(E/F)いずれか★', jp:false },
   { id:79, no:'M79', side:'L', pos:6, date:'7/2',
     t1:'コートジボワール🇨🇮',                  c1:'yes', s1:'E組2位（確定）',
     t2:'ノルウェー🇳🇴',                        c2:'yes', s2:'I組2位（確定）', jp:false },
   { id:80, no:'M80', side:'L', pos:7, date:'7/2',
-    t1:'イングランド or ガーナ',               c1:'est', s1:'L組1位★（6/28確定）',
-    t2:'スウェ or パラ or エク or ボスニア',   c2:'est', s2:'3位通過チーム', jp:false },
+    t1:'イングランド or ガーナ', c1:'est', s1:'L組1位★（6/28確定）',
+    t2:'エクアドル🇪🇨',        c2:'yes', s2:'3位確定済(E組のみ対象) ◎', jp:false },
   { id:81, no:'M81', side:'R', pos:0, date:'7/2',
-    t1:'アメリカ🇺🇸',                         c1:'yes', s1:'D組1位 ◎',
-    t2:'スウェ or パラ or エク or ボスニア',   c2:'est', s2:'3位通過チーム', jp:false },
+    t1:'アメリカ🇺🇸',   c1:'yes', s1:'D組1位 ◎',
+    t2:'ボスニア or エク or スウェ', c2:'est', s2:'3位確定済(B/E/F)いずれか★', jp:false },
   { id:82, no:'M82', side:'R', pos:1, date:'7/2',
-    t1:'エジプト🇪🇬',                         c1:'yes', s1:'G組1位（確定）',
-    t2:'スウェ or パラ or エク or ボスニア',   c2:'est', s2:'3位通過チーム', jp:false },
+    t1:'エジプト🇪🇬',   c1:'yes', s1:'G組1位（確定）',
+    t2:'エクアドル🇪🇨', c2:'yes', s2:'3位確定済(E組のみ対象) ◎', jp:false },
   { id:83, no:'M83', side:'R', pos:2, date:'7/3',
     t1:'ポルトガル🇵🇹',                       c1:'est', s1:'K組2位★（勝ち点4）',
     t2:'ガーナ or クロアチア',                 c2:'est', s2:'L組2位★（6/28確定）', jp:false },
@@ -467,14 +467,14 @@ const MATCHES = [
     t1:'アルゼンチン🇦🇷',                     c1:'yes', s1:'J組1位（確定）',
     t2:'ウルグアイ🇺🇾',                        c2:'yes', s2:'H組2位（確定）', jp:false },
   { id:86, no:'M86', side:'R', pos:5, date:'7/4',
-    t1:'コロンビア🇨🇴',                       c1:'yes', s1:'K組1位 ◎',
-    t2:'スウェ or パラ or エク or ボスニア',   c2:'est', s2:'3位通過チーム', jp:false },
+    t1:'コロンビア🇨🇴', c1:'yes', s1:'K組1位 ◎',
+    t2:'パラ or エク',   c2:'est', s2:'3位確定済(D/E)いずれか★', jp:false },
   { id:87, no:'M87', side:'R', pos:6, date:'7/4',
     t1:'オーストラリア🇦🇺',                   c1:'yes', s1:'D組2位 ◎',
     t2:'イラン or ベルギー',                   c2:'est', s2:'G組2位★（確定・3分け同士）', jp:false },
   { id:88, no:'M88', side:'R', pos:7, date:'7/4',
-    t1:'スイス🇨🇭',                           c1:'yes', s1:'B組1位 ◎',
-    t2:'スウェ or パラ or エク or ボスニア',   c2:'est', s2:'3位通過チーム', jp:false },
+    t1:'スイス🇨🇭',     c1:'yes', s1:'B組1位 ◎',
+    t2:'エク or スウェ', c2:'est', s2:'3位確定済(E/F)いずれか★', jp:false },
 ];
 
 // ================================================================
@@ -643,45 +643,33 @@ const r32list = document.getElementById('r32-list');
 
 })();
 
-// SVGブラケット（縦型：左から右へ流れる、上半山→下半山）
-// 構造: R32(8試合) → R16(4試合) → QF(2試合) → SF(1試合) → 決勝
-// 上ブロック(M73-M80、旧左ブロック) と 下ブロック(M81-M88、旧右ブロック) を縦に並べる
-
-const BW=148, BH=58, GAP=10, RGAP=24, CW=20, CH=20;
-// 各ラウンドのX座標（左から右）
+// SVGブラケット（縦型：左から右へ、上半山→下半山）
+const BW=148, BH=58, GAP=10, RGAP=24, CW=20;
 const X_R32=0, X_R16=X_R32+BW+CW*2, X_QF=X_R16+BW+CW*2, X_SF=X_QF+BW+CW*2, X_FIN=X_SF+BW+CW*2;
 const SVG_W=X_FIN+BW+10;
-// 上ブロック：8試合を4ペアで配置
 const PAIR_H=BH*2+GAP;
 const BLOCK_H=PAIR_H*4+RGAP*3;
-const TOP_PAD=28; // ラウンドラベル分
-const BLOCK_GAP=60; // 上下ブロックの間隔
+const TOP_PAD=28;
+const BLOCK_GAP=60;
 const SVG_H=TOP_PAD+BLOCK_H*2+BLOCK_GAP+40;
-
 const LINE='#3d5573',GOLD='#d97706',JPC='#e63946';
 const COL={yes:'#22c55e',est:'#60a5fa',sp:'#c4b5fd'};
 const BGs={yes:'#0a1f10',est:'#0a1030',sp:'#1a0f2e'};
 const BDs={yes:'#16a34a',est:'#2563eb',sp:'#7c3aed'};
-
 const svg=document.getElementById('bracket-svg');
 svg.setAttribute('width',SVG_W); svg.setAttribute('height',SVG_H);
 function el(tag,at,par){ const e=document.createElementNS('http://www.w3.org/2000/svg',tag); for(const[k,v]of Object.entries(at))e.setAttribute(k,v); if(par)par.appendChild(e); return e; }
 function cl(s,n){ return s&&s.length>n?s.slice(0,n-1)+'…':(s||''); }
-
-// ブロック内のY座標計算（blockTop=ブロックの開始Y）
-function tY(pos, blockTop){ const pi=Math.floor(pos/2),ip=pos%2; return blockTop+pi*(PAIR_H+RGAP)+ip*(BH+GAP); }
-function mY(pos, blockTop){ return tY(pos,blockTop)+BH/2; }
-function pMid(i, blockTop){ return (mY(i*2,blockTop)+mY(i*2+1,blockTop))/2; }
-function r16Mid(i, blockTop){ return (pMid(i*2,blockTop)+pMid(i*2+1,blockTop))/2; }
-function qfMid(blockTop){ return (r16Mid(0,blockTop)+r16Mid(1,blockTop))/2; }
-
-const TOP_BLOCK = TOP_PAD;
-const BOT_BLOCK = TOP_PAD + BLOCK_H + BLOCK_GAP;
-// 決勝のY: 上下ブロックのQF中間
-const SF_TOP_Y = qfMid(TOP_BLOCK);
-const SF_BOT_Y = qfMid(BOT_BLOCK);
-const FIN_Y = (SF_TOP_Y + SF_BOT_Y) / 2 - BH/2;
-
+function tY(pos,bTop){ return bTop+Math.floor(pos/2)*(PAIR_H+RGAP)+(pos%2)*(BH+GAP); }
+function mY(pos,bTop){ return tY(pos,bTop)+BH/2; }
+function pMid(i,bTop){ return (mY(i*2,bTop)+mY(i*2+1,bTop))/2; }
+function r16Mid(i,bTop){ return (pMid(i*2,bTop)+pMid(i*2+1,bTop))/2; }
+function qfMid(bTop){ return (r16Mid(0,bTop)+r16Mid(1,bTop))/2; }
+const TOP_BLOCK=TOP_PAD;
+const BOT_BLOCK=TOP_PAD+BLOCK_H+BLOCK_GAP;
+const SF_TOP_Y=qfMid(TOP_BLOCK);
+const SF_BOT_Y=qfMid(BOT_BLOCK);
+const FIN_Y=(SF_TOP_Y+SF_BOT_Y)/2-BH/2;
 function drawMatch(x,y,m){
   const hasSp=m.c1==='sp'||m.c2==='sp';
   const dominant=hasSp?'sp':(m.c1==='yes'&&m.c2==='yes')?'yes':'est';
@@ -704,72 +692,54 @@ function drawMatch(x,y,m){
   g.addEventListener('mouseenter',()=>showDetail(m));
   g.addEventListener('mouseleave',hideDetail);
 }
-
 function drawEmpty(x,y,label,gold=false){
   const g=el('g',{},svg);
   el('rect',{x,y,width:BW,height:BH,rx:5,ry:5,fill:gold?'#100c00':'#090e18',stroke:gold?GOLD:'#1a2535','stroke-width':gold?2:1,'stroke-dasharray':gold?'none':'5 3'},g);
   if(gold){ el('text',{x:x+BW/2,y:y+BH/2-7,'font-size':16,'text-anchor':'middle'},g).textContent='🏆'; }
   el('text',{x:x+BW/2,y:y+BH/2+(gold?13:5),'font-size':10,fill:gold?GOLD:'#1e3050','font-weight':gold?800:400,'text-anchor':'middle'},g).textContent=label;
 }
-
-// 右向きコネクター（2試合→1試合）
-function connR(bTop,pi){ // pi=ペアインデックス(0-3)
-  const t=mY(pi*2,bTop), b=mY(pi*2+1,bTop), mid=(t+b)/2;
+function connR32(bTop,pi){
+  const t=mY(pi*2,bTop),b=mY(pi*2+1,bTop),mid=(t+b)/2;
   [[X_R32+BW,t,X_R32+BW+CW,t],[X_R32+BW,b,X_R32+BW+CW,b],
    [X_R32+BW+CW,t,X_R32+BW+CW,b],[X_R32+BW+CW,mid,X_R32+BW+CW*2,mid]
   ].forEach(([x1,y1,x2,y2])=>el('line',{x1,y1,x2,y2,stroke:LINE,'stroke-width':1.5},svg));
 }
-function connR16(bTop,qi){ // R16→QF
-  const t=pMid(qi*2,bTop), b=pMid(qi*2+1,bTop), mid=(t+b)/2;
+function connR16(bTop,qi){
+  const t=pMid(qi*2,bTop),b=pMid(qi*2+1,bTop),mid=(t+b)/2;
   [[X_R16+BW,t,X_R16+BW+CW,t],[X_R16+BW,b,X_R16+BW+CW,b],
    [X_R16+BW+CW,t,X_R16+BW+CW,b],[X_R16+BW+CW,mid,X_R16+BW+CW*2,mid]
   ].forEach(([x1,y1,x2,y2])=>el('line',{x1,y1,x2,y2,stroke:LINE,'stroke-width':1.5},svg));
 }
-function connQF(bTop){ // QF→SF
-  const t=r16Mid(0,bTop), b=r16Mid(1,bTop), mid=(t+b)/2;
+function connQF(bTop){
+  const t=r16Mid(0,bTop),b=r16Mid(1,bTop),mid=(t+b)/2;
   [[X_QF+BW,t,X_QF+BW+CW,t],[X_QF+BW,b,X_QF+BW+CW,b],
    [X_QF+BW+CW,t,X_QF+BW+CW,b],[X_QF+BW+CW,mid,X_QF+BW+CW*2,mid]
   ].forEach(([x1,y1,x2,y2])=>el('line',{x1,y1,x2,y2,stroke:LINE,'stroke-width':1.5},svg));
 }
-
-// ── 描画 ──
 const lMs=MATCHES.filter(m=>m.side==='L').sort((a,b)=>a.pos-b.pos);
 const rMs=MATCHES.filter(m=>m.side==='R').sort((a,b)=>a.pos-b.pos);
-
-// 上ブロック（M73-M80）
 lMs.forEach(m=>drawMatch(X_R32,tY(m.pos,TOP_BLOCK),m));
-[0,1,2,3].forEach(i=>connR(TOP_BLOCK,i));
+[0,1,2,3].forEach(i=>connR32(TOP_BLOCK,i));
 [0,1,2,3].forEach(i=>drawEmpty(X_R16,pMid(i,TOP_BLOCK)-BH/2,`R16 7/${i<2?5:6}`));
 [0,1].forEach(i=>connR16(TOP_BLOCK,i));
 [0,1].forEach(i=>drawEmpty(X_QF,r16Mid(i,TOP_BLOCK)-BH/2,`QF 7/${i===0?10:11}`));
 connQF(TOP_BLOCK);
 drawEmpty(X_SF,qfMid(TOP_BLOCK)-BH/2,'SF① 7/14');
-
-// 下ブロック（M81-M88）
 rMs.forEach(m=>drawMatch(X_R32,tY(m.pos,BOT_BLOCK),m));
-[0,1,2,3].forEach(i=>connR(BOT_BLOCK,i));
+[0,1,2,3].forEach(i=>connR32(BOT_BLOCK,i));
 [0,1,2,3].forEach(i=>drawEmpty(X_R16,pMid(i,BOT_BLOCK)-BH/2,`R16 7/${i<2?7:8}`));
 [0,1].forEach(i=>connR16(BOT_BLOCK,i));
 [0,1].forEach(i=>drawEmpty(X_QF,r16Mid(i,BOT_BLOCK)-BH/2,`QF 7/${i===0?10:11}`));
 connQF(BOT_BLOCK);
 drawEmpty(X_SF,qfMid(BOT_BLOCK)-BH/2,'SF② 7/15');
-
-// SF→決勝のライン
 el('line',{x1:X_SF+BW,y1:SF_TOP_Y,x2:X_SF+BW+CW,y2:SF_TOP_Y,stroke:GOLD,'stroke-width':1.8},svg);
 el('line',{x1:X_SF+BW,y1:SF_BOT_Y,x2:X_SF+BW+CW,y2:SF_BOT_Y,stroke:GOLD,'stroke-width':1.8},svg);
 el('line',{x1:X_SF+BW+CW,y1:SF_TOP_Y,x2:X_SF+BW+CW,y2:SF_BOT_Y,stroke:GOLD,'stroke-width':1.8},svg);
 el('line',{x1:X_SF+BW+CW,y1:FIN_Y+BH/2,x2:X_FIN,y2:FIN_Y+BH/2,stroke:GOLD,'stroke-width':1.8},svg);
 drawEmpty(X_FIN,FIN_Y,'決勝 7/19',true);
-
-// ブロック境界線
 el('line',{x1:0,y1:TOP_BLOCK+BLOCK_H+BLOCK_GAP/2,x2:X_SF+BW,y2:TOP_BLOCK+BLOCK_H+BLOCK_GAP/2,stroke:'#1d2d42','stroke-width':1,'stroke-dasharray':'6 4'},svg);
-
-// ラウンドラベル（上部）
-[
-  [X_R32+BW/2,'R32'],[X_R16+BW/2,'R16'],[X_QF+BW/2,'QF'],[X_SF+BW/2,'SF'],[X_FIN+BW/2,'🏆FINAL']
+[[X_R32+BW/2,'R32'],[X_R16+BW/2,'R16'],[X_QF+BW/2,'QF'],[X_SF+BW/2,'SF'],[X_FIN+BW/2,'🏆FINAL']
 ].forEach(([x,l])=>{ el('text',{x,y:16,'font-size':9,fill:l.includes('FINAL')?GOLD:'#2a3f5a','font-weight':800,'text-anchor':'middle'},svg).textContent=l; });
-
-// ブロックラベル
 el('text',{x:4,y:TOP_BLOCK+12,'font-size':9,fill:'#3d5573','font-weight':700},svg).textContent='▲ 上半山 (M73-M80)';
 el('text',{x:4,y:BOT_BLOCK+12,'font-size':9,fill:'#3d5573','font-weight':700},svg).textContent='▼ 下半山 (M81-M88)';
 
