@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>W杯2026 決勝トーナメント表</title>
+<style>
+* { box-sizing:border-box; margin:0; padding:0; }
+body { font-family:'Segoe UI','Hiragino Sans',sans-serif; background:#0f1623; color:#e2e8f0; min-height:100vh; padding:16px; }
+header { text-align:center; margin-bottom:20px; }
+header .eyebrow { font-size:10px; letter-spacing:5px; color:#3b82f6; margin-bottom:6px; }
+header h1 { font-size:22px; font-weight:900; color:#fff; margin-bottom:3px; }
+header .sub { font-size:11px; color:#8899aa; }
+.tabs { display:flex; gap:8px; justify-content:center; margin-bottom:20px; flex-wrap:wrap; }
+.tab-btn { padding:7px 18px; border-radius:20px; border:none; cursor:pointer; font-weight:700; font-size:12px; background:#1a2535; color:#8899aa; }
+.tab-btn.active { background:#3b82f6; color:#fff; }
+.tab-content { display:none; }
+.tab-content.active { display:block; }
+#bracket-wrap { overflow-x:auto; background:#111c2d; border-radius:12px; padding:20px 16px 12px; border:1px solid #263650; }
+svg text { font-family:'Segoe UI','Hiragino Sans',sans-serif; }
+#detail-panel { margin-top:10px; min-height:56px; background:#16202e; border:1px solid #263650; border-radius:8px; padding:12px 16px; font-size:11px; color:#8899aa; display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:10px; }
+#detail-panel.has-data { justify-content:flex-start; color:#e2e8f0; }
+.dp-date { font-size:10px; font-weight:800; color:#60a5fa; min-width:44px; line-height:1.6; }
+.dp-team { flex:1; min-width:100px; }
+.dp-team .name { font-size:13px; font-weight:800; }
+.dp-team .sub { font-size:10px; color:#8899aa; margin-top:2px; }
+.dp-vs { font-size:11px; color:#5a6878; font-weight:700; }
+.legend { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-bottom:10px; font-size:10px; color:#8899aa; }
+.legend span { display:flex; align-items:center; gap:4px; }
+.dot { width:10px; height:10px; border-radius:2px; flex-shrink:0; }
+.note-box { background:#16202e; border:1px solid #263650; border-radius:8px; padding:10px 12px; font-size:10px; color:#8899aa; line-height:1.8; margin-top:10px; }
+.note-box .acc { color:#3b82f6; font-weight:700; }
+/* standings */
+.standings-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+@media(max-width:600px){ .standings-grid{grid-template-columns:1fr;} }
+.group-card { background:#16202e; border:1px solid #263650; border-radius:10px; overflow:hidden; }
+.group-card.jp-group { border-color:#e63946; }
+.group-header { background:#111c2d; padding:7px 12px; font-size:10px; font-weight:800; color:#3b82f6; letter-spacing:2px; display:flex; justify-content:space-between; align-items:center; }
+.group-header.jp { color:#f87171; }
+.badge { font-size:9px; padding:1px 6px; border-radius:5px; font-weight:700; color:#fff; }
+.badge-done { background:#16a34a; }
+.badge-live { background:#d97706; }
+.badge-sp { background:#7c3aed; }
+.standings-table { width:100%; border-collapse:collapse; }
+.standings-table th { font-size:9px; color:#6b7e92; font-weight:700; padding:4px 6px; text-align:center; }
+.standings-table th:first-child { text-align:left; padding-left:10px; }
+.standings-table td { font-size:11px; padding:5px 6px; text-align:center; border-top:1px solid #1a2535; }
+.standings-table td:first-child { text-align:left; padding-left:10px; }
+.standings-table tr.rank1 td { background:#0d1f30; }
+.standings-table tr.rank2 td { background:#0b1a28; }
+.rank-badge { display:inline-flex; width:16px; height:16px; border-radius:50%; align-items:center; justify-content:center; font-size:9px; font-weight:800; margin-right:4px; }
+.rank1 .rank-badge { background:#d97706; color:#fff; }
+.rank2 .rank-badge { background:#6b7e92; color:#fff; }
+.rank3 .rank-badge { background:#1e3050; color:#8899aa; }
+.rank4 .rank-badge { background:#1a2535; color:#6b7e92; }
+.pts { font-weight:800; }
+.rank1 .pts { color:#fbbf24; }
+.rank2 .pts { color:#94a3b8; }
+.gp{color:#4ade80;}.gn{color:#f87171;}.gz{color:#8899aa;}
+.spoiler-box { background:#1a0f2e; border:1px solid #7c3aed; border-radius:8px; padding:12px; text-align:center; margin:4px 0; }
+/* japan */
+.jp-box { background:linear-gradient(135deg,#1a0608,#120a1a); border:1px solid #e63946; border-radius:10px; padding:14px; margin-bottom:12px; }
+.jp-results { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:10px; }
+.jp-result { background:#111520; border-radius:7px; padding:8px 6px; text-align:center; }
+.jp-result .ml { font-size:9px; color:#8899aa; margin-bottom:4px; }
+.jp-result .sc { font-size:12px; font-weight:700; }
+.sc-card { background:#16202e; border-radius:8px; padding:10px 12px; margin-bottom:8px; }
+.sc-card h3 { font-size:12px; font-weight:700; margin-bottom:6px; }
+.sc-card p { font-size:11px; color:#aab8c8; line-height:1.9; }
+/* japan path */
+.path-block { background:#16202e; border:1px solid #263650; border-radius:10px; padding:12px 14px; margin-bottom:10px; }
+.path-round { font-size:10px; font-weight:800; color:#60a5fa; letter-spacing:1px; margin-bottom:2px; }
+.path-date  { font-size:9px; color:#8899aa; margin-bottom:8px; }
+.path-note  { font-size:9px; color:#6b7e92; margin-bottom:8px; border-left:2px solid #263650; padding-left:6px; }
+.path-rows  { display:flex; flex-direction:column; gap:4px; }
+.path-row   { display:flex; align-items:center; gap:8px; padding:5px 8px; border-radius:6px; background:#111c2d; }
+.path-rank  { font-size:9px; font-weight:800; color:#475569; width:32px; flex-shrink:0; text-align:center; }
+.path-name  { font-size:11px; font-weight:700; flex:1; }
+.path-desc  { font-size:9px; color:#8899aa; text-align:right; }
+/* r32 */
+.r32-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.r32-card { background:#16202e; border:1px solid #263650; border-radius:8px; padding:10px; }
+.r32-card.jp { background:#1a0608; border-color:#e63946; }
+.r32-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; font-size:9px; font-weight:700; color:#3b82f6; }
+.r32-card.jp .r32-top { color:#f87171; }
+.r32-teams { display:flex; align-items:center; gap:8px; }
+.r32-team { flex:1; }
+.r32-team.right { text-align:right; }
+.r32-name { font-size:12px; font-weight:700; }
+.r32-sub { font-size:9px; color:#6b7e92; margin-top:2px; }
+.jp-badge { background:#e63946; color:#fff; padding:1px 5px; border-radius:5px; font-size:9px; font-weight:700; }
+/* 3位条件ツールチップ */
+.cond-btn { cursor:pointer; font-size:9px; color:#60a5fa; background:#111c2d; border:1px solid #263650; border-radius:4px; padding:1px 5px; margin-left:4px; user-select:none; flex-shrink:0; }
+.cond-panel { display:none; margin-top:4px; padding:8px 10px; background:#111c2d; border:1px solid #3b82f6; border-radius:6px; font-size:9px; line-height:1.8; }
+.cond-panel.open { display:block; }
+.cond-through { color:#4ade80; }
+.cond-out     { color:#f87171; }
+</style>
+</head>
+<body>
+<header>
+  <div class="eyebrow">FIFA WORLD CUP 2026</div>
+  <h1>決勝トーナメント表</h1>
+  <div class="sub" id="header-sub"></div>
+</header>
+<div class="tabs">
+  <button class="tab-btn" onclick="switchTab('standings',this)">📊 グループ順位表</button>
+  <button class="tab-btn active" onclick="switchTab('bracket',this)">🏆 トーナメント表</button>
+  <button class="tab-btn" onclick="switchTab('r32',this)">R32 一覧</button>
+  <button class="tab-btn" onclick="switchTab('third',this)">🎫 3位通過ルール</button>
+  <button class="tab-btn" onclick="switchTab('japan',this)">🇯🇵 日本の道</button>
+</div>
+
+<!-- STANDINGS -->
+<div id="tab-standings" class="tab-content">
+  <div class="legend">
+    <span><span class="dot" style="background:#0d1f30;border:1px solid #1e4070"></span>突破確定</span>
+    <span><span class="dot" style="background:#1a1200;border:1px solid #d97706"></span>最終節残り</span>
+    <span style="color:#22c55e;font-weight:700">✓ F組確定（日本2位通過）</span>
+  </div>
+  <div class="standings-grid" id="standings-grid"></div>
+  <div class="note-box" style="margin-top:10px;">
+    <span class="acc">順位決定：</span>①勝ち点 ②直接対決 ③得失点差 ④総得点 ⑤FP ⑥FIFAランキング ／ 3位は12組横断で上位8チームが決勝T進出
+  </div>
+</div>
+
+<!-- BRACKET -->
+<div id="tab-bracket" class="tab-content active">
+  <div class="legend">
+    <span><span class="dot" style="background:#0a1f10;border:1px solid #22c55e"></span>◎確定</span>
+    <span><span class="dot" style="background:#0a1030;border:1px solid #60a5fa"></span>★最有力予想</span>
+  </div>
+  <div id="bracket-wrap"><svg id="bracket-svg" style="display:block;"></svg></div>
+  <div id="detail-panel">← 試合カードをホバーすると詳細が表示されます</div>
+  <div class="note-box">
+    <span class="acc">日程：</span><span id="schedule-note"></span>
+  </div>
+</div>
+
+<!-- R32 -->
+<div id="tab-r32" class="tab-content">
+  <p style="font-size:11px;color:#475569;text-align:center;margin-bottom:12px;">M73〜M88 FIFAの正式番号順。◎=確定 ★=最有力予想</p>
+  <div class="r32-grid" id="r32-list"></div>
+</div>
+
+<!-- THIRD PLACE -->
+<div id="tab-third" class="tab-content">
+  <div style="background:#0e1520;border:1px solid #1d2d42;border-radius:10px;padding:14px;margin-bottom:12px;">
+    <div style="font-size:12px;font-weight:800;color:#60a5fa;margin-bottom:10px;">🎫 3位通過のルール</div>
+    <div style="font-size:11px;color:#94a3b8;line-height:2;">
+      各グループの<strong style="color:#f1f5f9">1位・2位（計24チーム）</strong>は自動でR32進出。<br>
+      加えて、12グループの3位チーム同士を比較して<strong style="color:#fbbf24">上位8チーム</strong>もR32に進出。<br>
+      残り4チームはグループステージ敗退。
+    </div>
+    <div style="margin-top:10px;padding:10px;background:#0a1020;border-radius:8px;">
+      <div style="font-size:10px;font-weight:700;color:#3b82f6;margin-bottom:6px;">📊 3位同士の比較順位</div>
+      <div style="font-size:11px;color:#94a3b8;line-height:2;">
+        ① 勝ち点<br>② 得失点差<br>③ 総得点<br>④ フェアプレーポイント（警告・退場の少なさ）<br>⑤ FIFAランキング（直近→過去に遡って判定）
+      </div>
+      <div style="margin-top:6px;font-size:10px;color:#475569;">※グループ内順位（1〜4位）の決定は②より先に「直接対決の勝ち点」で判定。3位同士の比較とは別ルール。</div>
+    </div>
+  </div>
+  <div style="background:#0e1520;border:1px solid #1d2d42;border-radius:10px;padding:14px;margin-bottom:12px;">
+    <div style="font-size:12px;font-weight:800;color:#60a5fa;margin-bottom:4px;">🔀 3位通過チームはどの1位と当たる？</div>
+    <div style="font-size:10px;color:#475569;margin-bottom:10px;">FIFAが全495通りの組み合わせを事前に決定。どの8グループの3位が通過したかによって自動で振り分け。</div>
+    <div style="font-size:10px;font-weight:700;color:#3b82f6;margin-bottom:8px;">R32の「3位枠」8つ（FIFAの正式対戦番号）</div>
+    <div id="third-slots"></div>
+  </div>
+  <div style="background:#0e1520;border:1px solid #1d2d42;border-radius:10px;padding:14px;">
+    <div style="font-size:12px;font-weight:800;color:#60a5fa;margin-bottom:4px;">📋 現時点の各組3位チーム</div>
+    <div style="font-size:10px;color:#475569;margin-bottom:10px;" id="third-status-note"></div>
+    <div id="third-standings"></div>
+    <div style="margin-top:10px;font-size:10px;color:#475569;line-height:1.8;" id="third-extra-note"></div>
+  </div>
+</div>
+
+<!-- JAPAN -->
+<div id="tab-japan" class="tab-content">
+  <div id="japan-content"></div>
+</div>
+
+<!-- データ（インライン） -->
+<script>
+// ================================================================
+// ★ 更新するのはこのファイルだけでOK
+// ================================================================
+
+// --- メタ情報（更新日・ステータス文言） ---
+const META = {
+  lastUpdated:     '6月28日更新',
+  groupStatus:     'A〜I組確定',
+  todayNote:       'J・K・L組は本日最終節（6:00〜13:00）',
+  scheduleNote:    'R32（6/29〜7/4）→ R16（7/5〜7/8）→ QF（7/10〜7/11）→ SF（7/14〜7/15）→ 決勝（7/19）',
+  thirdStatusNote: 'A〜I組確定 ／ J・K・L組は最終節（6/28）終了後に確定',
+  thirdExtraNote: [
+    '★ 通過枠は8チーム。確定済みの上位4チーム（勝ち点4）は通過確定。',
+    '★ 勝ち点3の5チーム（セネガル・ウルグアイ・ベルギー・韓国・スコットランド）が残り4枠を争う。',
+    '★ J・L組の最終節次第でさらに2〜3チームが勝ち点3で参入予定。韓国・スコットランドは厳しい情勢。',
+  ],
+};
+
+// --- 日本代表データ ---
+const JAPAN = {
+  groupStage: {
+    matches: [
+      { vs: 'オランダ',     result: '1-1 引分', color: '#d97706' },
+      { vs: 'チュニジア',   result: '4-0 勝利', color: '#16a34a' },
+      { vs: 'スウェーデン', result: '1-1 引分', color: '#94a3b8' },
+    ],
+    summary:   'グループF最終結果：勝ち点5・F組2位通過（1勝2分）',
+    detail:    '前田大然が後半11分に先制も、62分にエランガに追いつかれ1-1。',
+    milestone: '3大会連続・決勝トーナメント進出！',
+  },
+  r32: {
+    confirmed:    true,
+    no:           'M76',
+    date:         '6/30',
+    opponent:     'ブラジル🇧🇷',
+    opponentDesc: 'C組1位・確定',
+    venue:        'モンテレイ',
+    nextNote:     'R16でM74勝者（ドイツ vs 3位）と対戦',
+  },
+};
+
+// --- 日本代表の潜在的対戦相手（FIFAランク順） ---
+const JAPAN_PATH = [
+  {
+    round: 'R32',
+    date: '6/30',
+    matchNo: 'M76',
+    note: '対戦相手確定',
+    opponents: [
+      { name: 'ブラジル🇧🇷', rank: 5, desc: 'C組1位（確定）', conf: 'yes' },
+    ],
+  },
+  {
+    round: 'R16',
+    date: '7/5〜7/6',
+    matchNo: 'M74勝者',
+    note: 'M74の勝者と対戦（ドイツ vs 3位通過チーム）',
+    opponents: [
+      { name: 'ドイツ🇩🇪',          rank: 12, desc: 'E組1位（確定）',    conf: 'yes' },
+      { name: 'スウェーデン🇸🇪',    rank: 33, desc: '3位通過・通過確定', conf: 'est' },
+      { name: 'ボスニア🇧🇦',        rank: 55, desc: '3位通過・通過確定', conf: 'est' },
+      { name: 'パラグアイ🇵🇾',      rank: 62, desc: '3位通過・通過確定', conf: 'est' },
+      { name: 'エクアドル🇪🇨',      rank: 35, desc: '3位通過・通過確定', conf: 'est' },
+    ],
+  },
+  {
+    round: 'QF',
+    date: '7/10〜7/11',
+    matchNo: 'R16-A勝者',
+    note: 'M73・M75の勝者が対戦したR16の勝者と対戦',
+    opponents: [
+      { name: 'オランダ🇳🇱',    rank: 7,  desc: 'F組1位（確定）', conf: 'yes' },
+      { name: 'モロッコ🇲🇦',    rank: 14, desc: 'C組2位（確定）', conf: 'yes' },
+      { name: '南アフリカ🇿🇦',  rank: 62, desc: 'A組2位（確定）', conf: 'yes' },
+      { name: 'カナダ🇨🇦',      rank: 48, desc: 'B組2位（確定）', conf: 'yes' },
+    ],
+  },
+  {
+    round: 'SF',
+    date: '7/14',
+    matchNo: 'SF①',
+    note: 'M77〜M80ブロックの勝者と対戦',
+    opponents: [
+      { name: 'フランス🇫🇷',        rank: 2,  desc: 'I組1位（確定）',  conf: 'yes' },
+      { name: 'イングランド🏴󠁧󠁢󠁥󠁮󠁧󠁿',   rank: 4,  desc: 'L組1位最有力',  conf: 'est' },
+      { name: 'メキシコ🇲🇽',        rank: 16, desc: 'A組1位（確定）',  conf: 'yes' },
+      { name: 'ノルウェー🇳🇴',       rank: 38, desc: 'I組2位（確定）',  conf: 'yes' },
+      { name: 'コートジボワール🇨🇮', rank: 51, desc: 'E組2位（確定）',  conf: 'yes' },
+    ],
+  },
+  {
+    round: '決勝',
+    date: '7/19',
+    matchNo: 'FINAL',
+    note: '右ブラケット（M81〜M88）ブロックの勝者と対戦',
+    opponents: [
+      { name: 'アルゼンチン🇦🇷',  rank: 1,  desc: 'J組1位（確定）', conf: 'yes' },
+      { name: 'スペイン🇪🇸',      rank: 3,  desc: 'H組1位（確定）', conf: 'yes' },
+      { name: 'ポルトガル🇵🇹',    rank: 6,  desc: 'K組2位最有力',   conf: 'est' },
+      { name: 'コロンビア🇨🇴',    rank: 9,  desc: 'K組1位（確定）', conf: 'yes' },
+      { name: 'アメリカ🇺🇸',      rank: 11, desc: 'D組1位（確定）', conf: 'yes' },
+      { name: 'クロアチア🇭🇷',    rank: 15, desc: 'L組2位候補',     conf: 'est' },
+      { name: 'ウルグアイ🇺🇾',    rank: 17, desc: 'H組2位（確定）', conf: 'yes' },
+      { name: 'スイス🇨🇭',        rank: 19, desc: 'B組1位（確定）', conf: 'yes' },
+      { name: 'オーストラリア🇦🇺', rank: 24, desc: 'D組2位（確定）', conf: 'yes' },
+      { name: 'エジプト🇪🇬',      rank: 36, desc: 'G組1位（確定）', conf: 'yes' },
+      { name: 'ガーナ🇬🇭',        rank: 52, desc: 'L組2位候補',     conf: 'est' },
+    ],
+  },
+];
+
+// --- グループ順位表データ ---
+const GROUPS = [
+  { id:'A', done:true,  jp:false, sp:false, teams:[
+    { name:'メキシコ🇲🇽',       p:3,w:3,d:0,l:0,gd:'+6', pts:9, st:'through'},
+    { name:'南アフリカ🇿🇦',     p:3,w:1,d:1,l:1,gd:'-1', pts:4, st:'through'},
+    { name:'韓国🇰🇷',           p:3,w:1,d:0,l:2,gd:'-1', pts:3, st:'out'},
+    { name:'チェコ🇨🇿',         p:3,w:0,d:1,l:2,gd:'-4', pts:1, st:'out'},
+  ]},
+  { id:'B', done:true,  jp:false, sp:false, teams:[
+    { name:'スイス🇨🇭',         p:3,w:2,d:1,l:0,gd:'+4', pts:7, st:'through'},
+    { name:'カナダ🇨🇦',         p:3,w:1,d:1,l:1,gd:'+5', pts:4, st:'through'},
+    { name:'ボスニア🇧🇦',       p:3,w:1,d:1,l:1,gd:'-1', pts:4, st:'out'},
+    { name:'カタール🇶🇦',       p:3,w:0,d:1,l:2,gd:'-8', pts:1, st:'out'},
+  ]},
+  { id:'C', done:true,  jp:false, sp:false, teams:[
+    { name:'ブラジル🇧🇷',       p:3,w:2,d:1,l:0,gd:'+6', pts:7, st:'through'},
+    { name:'モロッコ🇲🇦',       p:3,w:2,d:1,l:0,gd:'+3', pts:7, st:'through'},
+    { name:'スコットランド🏴󠁧󠁢󠁳󠁣󠁴󠁿', p:3,w:1,d:0,l:2,gd:'-3', pts:3, st:'out'},
+    { name:'ハイチ🇭🇹',         p:3,w:0,d:0,l:3,gd:'-6', pts:0, st:'out'},
+  ]},
+  { id:'D', done:true,  jp:false, sp:false, teams:[
+    { name:'アメリカ🇺🇸',       p:3,w:2,d:1,l:0,gd:'+5', pts:7, st:'through'},
+    { name:'オーストラリア🇦🇺',  p:3,w:1,d:2,l:0,gd:'0',  pts:5, st:'through'},
+    { name:'パラグアイ🇵🇾',     p:3,w:1,d:1,l:1,gd:'-4', pts:4, st:'out'},
+    { name:'トルコ🇹🇷',         p:3,w:0,d:2,l:1,gd:'-1', pts:2, st:'out'},
+  ]},
+  { id:'E', done:true,  jp:false, sp:false, teams:[
+    { name:'ドイツ🇩🇪',         p:3,w:2,d:0,l:1,gd:'+5', pts:6, st:'through'},
+    { name:'コートジボワール🇨🇮', p:3,w:2,d:0,l:1,gd:'+2', pts:6, st:'through'},
+    { name:'エクアドル🇪🇨',     p:3,w:1,d:1,l:1,gd:'+1', pts:4, st:'alive'},
+    { name:'キュラソー🇨🇼',     p:3,w:0,d:1,l:2,gd:'-8', pts:1, st:'out'},
+  ]},
+  { id:'F', done:true,  jp:true,  sp:false, teams:[
+    { name:'オランダ🇳🇱',       p:3,w:2,d:1,l:0,gd:'+9', pts:7, st:'through'},
+    { name:'日本🇯🇵',           p:3,w:1,d:2,l:0,gd:'+4', pts:5, st:'through'},
+    { name:'スウェーデン🇸🇪',   p:3,w:1,d:1,l:1,gd:'-3', pts:4, st:'out'},
+    { name:'チュニジア🇹🇳',     p:3,w:0,d:0,l:3,gd:'-10',pts:0, st:'out'},
+  ]},
+  { id:'G', done:true,  jp:false, sp:false, teams:[
+    { name:'エジプト🇪🇬',       p:3,w:2,d:1,l:0,gd:'+4', pts:7, st:'through'},
+    { name:'ベルギー🇧🇪',       p:3,w:0,d:3,l:0,gd:'0',  pts:3, st:'through'},
+    { name:'イラン🇮🇷',         p:3,w:0,d:3,l:0,gd:'0',  pts:3, st:'out'},
+    { name:'NZ🇳🇿',             p:3,w:0,d:1,l:2,gd:'-4', pts:1, st:'out'},
+  ]},
+  { id:'H', done:true,  jp:false, sp:false, teams:[
+    { name:'スペイン🇪🇸',       p:3,w:2,d:1,l:0,gd:'+5', pts:7, st:'through'},
+    { name:'ウルグアイ🇺🇾',     p:3,w:0,d:3,l:0,gd:'0',  pts:3, st:'through'},
+    { name:'カーボベルデ🇨🇻',   p:3,w:0,d:3,l:0,gd:'0',  pts:3, st:'out'},
+    { name:'サウジアラビア🇸🇦',  p:3,w:0,d:1,l:2,gd:'-5', pts:1, st:'out'},
+  ]},
+  { id:'I', done:true,  jp:false, sp:false, teams:[
+    { name:'フランス🇫🇷',       p:3,w:3,d:0,l:0,gd:'+9', pts:9, st:'through'},
+    { name:'ノルウェー🇳🇴',     p:3,w:2,d:0,l:1,gd:'+3', pts:6, st:'through'},
+    { name:'セネガル🇸🇳',       p:3,w:1,d:0,l:2,gd:'+1', pts:3, st:'out'},
+    { name:'イラク🇮🇶',         p:3,w:0,d:0,l:3,gd:'-13',pts:0, st:'out'},
+  ]},
+  { id:'J', done:false, jp:false, sp:false, teams:[
+    { name:'アルゼンチン🇦🇷',   p:2,w:2,d:0,l:0,gd:'+5', pts:6, st:'through'},
+    { name:'オーストリア🇦🇹',   p:2,w:1,d:0,l:1,gd:'0',  pts:3, st:'alive'},
+    { name:'アルジェリア🇩🇿',   p:2,w:1,d:0,l:1,gd:'-1', pts:3, st:'alive'},
+    { name:'ヨルダン🇯🇴',       p:2,w:0,d:0,l:2,gd:'-4', pts:0, st:'out'},
+  ]},
+  { id:'K', done:false, jp:false, sp:false, teams:[
+    { name:'コロンビア🇨🇴',     p:2,w:2,d:0,l:0,gd:'+3', pts:6, st:'through'},
+    { name:'ポルトガル🇵🇹',     p:2,w:1,d:1,l:0,gd:'+5', pts:4, st:'alive'},
+    { name:'コンゴDR🇨🇩',       p:2,w:0,d:1,l:1,gd:'-1', pts:1, st:'alive'},
+    { name:'ウズベキスタン🇺🇿',  p:2,w:0,d:0,l:2,gd:'-7', pts:0, st:'out'},
+  ]},
+  { id:'L', done:false, jp:false, sp:false, teams:[
+    { name:'イングランド🏴󠁧󠁢󠁥󠁮󠁧󠁿',  p:2,w:1,d:1,l:0,gd:'+2', pts:4, st:'alive'},
+    { name:'ガーナ🇬🇭',          p:2,w:1,d:1,l:0,gd:'+1', pts:4, st:'alive'},
+    { name:'クロアチア🇭🇷',     p:2,w:1,d:0,l:1,gd:'-1', pts:3, st:'alive'},
+    { name:'パナマ🇵🇦',         p:2,w:0,d:0,l:2,gd:'-2', pts:0, st:'alive'},
+  ]},
+];
+
+// --- 3位通過スロット（FIFAが事前に決定済み・変更不要） ---
+const THIRD_SLOTS = [
+  { match:'M74', vsTeam:'ドイツ🇩🇪',     vsDesc:'E組1位',         groups:'A・B・C・D・F', date:'6/29' },
+  { match:'M77', vsTeam:'フランス🇫🇷',    vsDesc:'I組1位（確定）',  groups:'C・D・F・G・H', date:'7/1' },
+  { match:'M79', vsTeam:'メキシコ🇲🇽',   vsDesc:'A組1位',         groups:'C・E・F・H・I', date:'7/1' },
+  { match:'M80', vsTeam:'L組1位',         vsDesc:'イングランド有力', groups:'E・H・I・J・K', date:'7/2' },
+  { match:'M81', vsTeam:'アメリカ🇺🇸',   vsDesc:'D組1位',         groups:'B・E・F・I・J', date:'7/2' },
+  { match:'M82', vsTeam:'エジプト🇪🇬',    vsDesc:'G組1位（確定）',  groups:'A・E・H・I・J', date:'7/2' },
+  { match:'M86', vsTeam:'コロンビア🇨🇴', vsDesc:'K組1位',         groups:'D・E・I・J・L', date:'7/4' },
+  { match:'M88', vsTeam:'スイス🇨🇭',     vsDesc:'B組1位',         groups:'E・F・G・I・J', date:'7/4' },
+];
+
+// --- 3位チーム暫定順位 ---
+// done:true = 確定、done:false = 最終節未確定（★暫定 と表示）
+// cond_through: 通過条件、cond_out: 敗退条件
+const THIRDS = [
+  // ── 勝ち点4・通過確定 ──
+  { grp:'E', name:'エクアドル🇪🇨',   pts:4, gd:+1, done:true,
+    cond_through: '通過確定',
+    cond_out: 'なし' },
+  { grp:'B', name:'ボスニア🇧🇦',     pts:4, gd:-1, done:true,
+    cond_through: '通過確定',
+    cond_out: 'なし' },
+  { grp:'F', name:'スウェーデン🇸🇪', pts:4, gd:-3, done:true,
+    cond_through: '通過確定',
+    cond_out: 'なし' },
+  { grp:'D', name:'パラグアイ🇵🇾',   pts:4, gd:-4, done:true,
+    cond_through: '通過確定',
+    cond_out: 'なし' },
+  // ── 勝ち点3・通過争い ──
+  { grp:'I', name:'セネガル🇸🇳',     pts:3, gd:+1, done:true,
+    cond_through: '現在5位。J・L組の3位が勝ち点3・得失点差0以下に留まれば通過。',
+    cond_out: 'J・L組の3位が得失点差+1以上になると押し出される可能性あり。' },
+  { grp:'H', name:'ウルグアイ🇺🇾',   pts:3, gd: 0, done:true,
+    cond_through: '現在6位。J・L組の3位が勝ち点3・得失点差-1以下に留まれば通過。',
+    cond_out: 'J・L組の3位が得失点差0以上になると押し出される可能性あり。' },
+  { grp:'G', name:'ベルギー🇧🇪',     pts:3, gd: 0, done:true,
+    cond_through: '現在7位。J・L組の3位が勝ち点3・得失点差-1以下に留まれば通過。',
+    cond_out: 'J・L組の3位が得失点差0以上になると押し出される可能性あり。' },
+  { grp:'A', name:'韓国🇰🇷',         pts:3, gd:-1, done:true,
+    cond_through: '現在8位（ギリギリ通過圏内）。J・L組の3位が両方とも「負け」または「引き分けで得失点差-2以下」になる必要あり。かなり厳しい。',
+    cond_out: 'J組またはL組の3位が引き分け（得失点差0維持）以上の結果を出せば敗退確定。' },
+  { grp:'C', name:'スコットランド🏴󠁧󠁢󠁳󠁣󠁴󠁿', pts:3, gd:-3, done:true,
+    cond_through: '現在9位（通過圏外）。J・K・L組の3位が全員勝ち点2以下かつ得失点差-4以下になる必要あり。事実上不可能。',
+    cond_out: 'J・K・L組のいずれかの3位が勝ち点3・得失点差-2以上を確保すれば敗退確定。ほぼ確定。' },
+  // ── 未確定（最終節待ち）──
+  { grp:'J', name:'オーストリア or アルジェリア', pts:3, gd: 0, done:false,
+    cond_through: '最終節の結果で勝ち点3・得失点差0以上を維持すれば通過圏内に入り、韓国を押し出せる。',
+    cond_out: '最終節で大敗して得失点差が悪化した場合のみ韓国に逆転される可能性あり。' },
+  { grp:'L', name:'クロアチア🇭🇷',   pts:3, gd:-1, done:false,
+    cond_through: '最終節勝利かつ得失点差が改善すれば通過圏内。引き分けだと韓国と同条件で争う。',
+    cond_out: '最終節大敗で得失点差が-2以下になれば韓国より下に落ちる。' },
+  { grp:'K', name:'コンゴDR🇨🇩',     pts:1, gd:-1, done:false,
+    cond_through: '理論上不可能に近い。勝利でも勝ち点4で最下位グループのため、他全組の3位が壊滅的結果になる必要あり。',
+    cond_out: '引き分け・敗北で敗退確定。事実上すでに脱落。' },
+];
+
+// --- R32マッチデータ ---
+const MATCHES = [
+  { id:73, no:'M73', side:'L', pos:0, date:'6/29',
+    t1:'南アフリカ🇿🇦',                       c1:'yes', s1:'A組2位 ◎',
+    t2:'カナダ🇨🇦',                           c2:'yes', s2:'B組2位 ◎', jp:false },
+  { id:74, no:'M74', side:'L', pos:1, date:'6/30',
+    t1:'ドイツ🇩🇪',                           c1:'yes', s1:'E組1位 ◎',
+    t2:'スウェ or パラ or エク or ボスニア',   c2:'est', s2:'3位通過チーム（勝ち点4組が最有力）', jp:false },
+  { id:75, no:'M75', side:'L', pos:2, date:'6/30',
+    t1:'オランダ🇳🇱',                         c1:'yes', s1:'F組1位（確定）',
+    t2:'モロッコ🇲🇦',                         c2:'yes', s2:'C組2位（確定）', jp:false },
+  { id:76, no:'M76', side:'L', pos:3, date:'6/30',
+    t1:'ブラジル🇧🇷',                         c1:'yes', s1:'C組1位（確定）',
+    t2:'日本🇯🇵',                             c2:'yes', s2:'F組2位（確定）◎', jp:true },
+  { id:77, no:'M77', side:'L', pos:4, date:'7/1',
+    t1:'フランス🇫🇷',                         c1:'yes', s1:'I組1位（確定・3戦全勝）',
+    t2:'スウェ or パラ or エク or ボスニア',   c2:'est', s2:'3位通過チーム', jp:false },
+  { id:78, no:'M78', side:'L', pos:5, date:'7/1',
+    t1:'メキシコ🇲🇽',                         c1:'yes', s1:'A組1位 ◎',
+    t2:'スウェ or パラ or エク or ボスニア',   c2:'est', s2:'3位通過チーム', jp:false },
+  { id:79, no:'M79', side:'L', pos:6, date:'7/2',
+    t1:'コートジボワール🇨🇮',                  c1:'yes', s1:'E組2位（確定）',
+    t2:'ノルウェー🇳🇴',                        c2:'yes', s2:'I組2位（確定）', jp:false },
+  { id:80, no:'M80', side:'L', pos:7, date:'7/2',
+    t1:'イングランド or ガーナ',               c1:'est', s1:'L組1位★（6/28確定）',
+    t2:'スウェ or パラ or エク or ボスニア',   c2:'est', s2:'3位通過チーム', jp:false },
+  { id:81, no:'M81', side:'R', pos:0, date:'7/2',
+    t1:'アメリカ🇺🇸',                         c1:'yes', s1:'D組1位 ◎',
+    t2:'スウェ or パラ or エク or ボスニア',   c2:'est', s2:'3位通過チーム', jp:false },
+  { id:82, no:'M82', side:'R', pos:1, date:'7/2',
+    t1:'エジプト🇪🇬',                         c1:'yes', s1:'G組1位（確定）',
+    t2:'スウェ or パラ or エク or ボスニア',   c2:'est', s2:'3位通過チーム', jp:false },
+  { id:83, no:'M83', side:'R', pos:2, date:'7/3',
+    t1:'ポルトガル🇵🇹',                       c1:'est', s1:'K組2位★（勝ち点4）',
+    t2:'ガーナ or クロアチア',                 c2:'est', s2:'L組2位★（6/28確定）', jp:false },
+  { id:84, no:'M84', side:'R', pos:3, date:'7/3',
+    t1:'スペイン🇪🇸',                         c1:'yes', s1:'H組1位（確定）',
+    t2:'オーストリア or アルジェリア',         c2:'est', s2:'J組2位★（6/28確定）', jp:false },
+  { id:85, no:'M85', side:'R', pos:4, date:'7/4',
+    t1:'アルゼンチン🇦🇷',                     c1:'yes', s1:'J組1位（確定）',
+    t2:'ウルグアイ🇺🇾',                        c2:'yes', s2:'H組2位（確定）', jp:false },
+  { id:86, no:'M86', side:'R', pos:5, date:'7/4',
+    t1:'コロンビア🇨🇴',                       c1:'yes', s1:'K組1位 ◎',
+    t2:'スウェ or パラ or エク or ボスニア',   c2:'est', s2:'3位通過チーム', jp:false },
+  { id:87, no:'M87', side:'R', pos:6, date:'7/4',
+    t1:'オーストラリア🇦🇺',                   c1:'yes', s1:'D組2位 ◎',
+    t2:'イラン or ベルギー',                   c2:'est', s2:'G組2位★（確定・3分け同士）', jp:false },
+  { id:88, no:'M88', side:'R', pos:7, date:'7/4',
+    t1:'スイス🇨🇭',                           c1:'yes', s1:'B組1位 ◎',
+    t2:'スウェ or パラ or エク or ボスニア',   c2:'est', s2:'3位通過チーム', jp:false },
+];
+
+// ================================================================
+// 描画ロジック（通常は編集不要）
+// ================================================================
+
+// ヘッダー
+document.getElementById('header-sub').textContent =
+  `${META.lastUpdated} ／ ${META.groupStatus} ／ ${META.todayNote}`;
+document.getElementById('schedule-note').textContent = META.scheduleNote;
+document.getElementById('third-status-note').textContent = META.thirdStatusNote;
+document.getElementById('third-extra-note').innerHTML = META.thirdExtraNote.join('<br>');
+
+// グループ順位表
+const grid = document.getElementById('standings-grid');
+GROUPS.forEach(g => {
+  const card = document.createElement('div');
+  card.className = 'group-card' + (g.jp ? ' jp-group' : '');
+  const badge = g.sp
+    ? '<span class="badge badge-sp">🙈 ネタバレ防止</span>'
+    : g.done ? '<span class="badge badge-done">確定</span>'
+    : '<span class="badge badge-live">最終節残り</span>';
+  if (g.sp) {
+    card.innerHTML = `<div class="group-header jp"><span>GROUP ${g.id}</span>${badge}</div><div class="spoiler-box"><div style="font-size:16px">🙈</div><div style="font-size:11px;font-weight:700;color:#c4b5fd;margin-top:4px">日本の試合結果はネタバレ防止中</div></div>`;
+  } else {
+    const rows = g.teams.map((t, i) => {
+      const gc = t.gd.startsWith('+') ? 'gp' : t.gd.startsWith('-') ? 'gn' : 'gz';
+      const nc = t.st === 'through' ? '#22c55e' : t.st === 'out' ? '#374151' : '#f1f5f9';
+      const str = t.st === 'out' ? ';text-decoration:line-through;opacity:.5' : '';
+      return `<tr class="rank${i+1}"><td><span class="rank-badge">${i+1}</span><span style="color:${nc}${str}">${t.name}</span></td><td>${t.p}</td><td>${t.w}</td><td>${t.d}</td><td>${t.l}</td><td class="${gc}">${t.gd}</td><td class="pts">${t.pts}</td></tr>`;
+    }).join('');
+    card.innerHTML = `<div class="group-header${g.jp?' jp':''}"><span>GROUP ${g.id}</span>${badge}</div><table class="standings-table"><thead><tr><th style="width:44%">チーム</th><th>試</th><th>勝</th><th>分</th><th>敗</th><th>差</th><th>点</th></tr></thead><tbody>${rows}</tbody></table>`;
+  }
+  grid.appendChild(card);
+});
+
+// 3位スロット
+THIRD_SLOTS.forEach(s => {
+  const div = document.createElement('div');
+  div.style.cssText = 'background:#0a1020;border:1px solid #1d2d42;border-radius:8px;padding:9px 12px;margin-bottom:7px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;';
+  div.innerHTML = `
+    <div style="font-size:10px;font-weight:800;color:#3b82f6;min-width:36px">${s.match}</div>
+    <div style="flex:1;min-width:120px">
+      <div style="font-size:11px;font-weight:700;color:#f1f5f9">${s.vsTeam} <span style="color:#475569;font-size:10px">vs</span> <span style="color:#fbbf24">🎫 3位通過チーム</span></div>
+      <div style="font-size:9px;color:#475569;margin-top:2px">${s.vsDesc} · ${s.date}</div>
+    </div>
+    <div style="background:#111827;border-radius:6px;padding:4px 8px;font-size:9px;color:#60a5fa;flex-shrink:0">
+      対象：<strong>${s.groups}</strong>の3位
+    </div>`;
+  document.getElementById('third-slots').appendChild(div);
+});
+
+// 3位暫定順位
+const sorted3 = [...THIRDS].sort((a, b) => b.pts !== a.pts ? b.pts - a.pts : b.gd - a.gd);
+const thirdStandings = document.getElementById('third-standings');
+const hdr = document.createElement('div');
+hdr.style.cssText = 'display:flex;gap:10px;padding:4px 8px;margin-bottom:4px;font-size:9px;color:#6b7e92;font-weight:700;';
+hdr.innerHTML = '<div style="width:20px"></div><div style="width:18px">組</div><div style="flex:1">チーム</div><div style="width:20px;text-align:right">点</div><div style="width:28px;text-align:right">差</div><div style="width:44px"></div>';
+thirdStandings.appendChild(hdr);
+sorted3.forEach((t, i) => {
+  const through = i < 8;
+  const gdStr = t.gd > 0 ? '+'+t.gd : t.gd === 0 ? '0' : String(t.gd);
+  const gdCol = t.gd > 0 ? '#4ade80' : t.gd < 0 ? '#f87171' : '#8899aa';
+  const hasCond = !t.done && (t.cond_through || t.cond_out);
+
+  const wrap = document.createElement('div');
+  wrap.style.cssText = 'margin-bottom:4px;';
+
+  const row = document.createElement('div');
+  row.style.cssText = `display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:6px;background:${through?'#0d1f30':'#0d1320'};border:1px solid ${through?'#1e4070':'#1a2535'};`;
+  row.innerHTML = `
+    <div style="width:20px;height:20px;border-radius:50%;background:${through?'#d97706':'#3d5070'};display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:${through?'#000':'#aab8c8'};flex-shrink:0">${i+1}</div>
+    <div style="width:18px;font-size:10px;font-weight:700;color:#6b7e92;flex-shrink:0">${t.grp}</div>
+    <div style="flex:1;font-size:11px;font-weight:${t.done?700:600};color:${t.done?'#e2e8f0':'#c8d8e8'}">${t.name}${!t.done?' <span style="font-size:8px;color:#8899aa">★未確定</span>':''}</div>
+    <div style="width:20px;font-size:11px;font-weight:800;color:${through?'#fbbf24':'#8899aa'};text-align:right;flex-shrink:0">${t.pts}</div>
+    <div style="width:28px;font-size:10px;color:${gdCol};text-align:right;flex-shrink:0">${!t.done&&t.pts===0?'?':gdStr}</div>
+    <div style="display:flex;align-items:center;gap:4px;width:56px;flex-shrink:0;justify-content:flex-end">
+      ${through?'<span style="font-size:8px;background:#16a34a;color:#fff;padding:1px 5px;border-radius:4px">通過圏</span>':'<span style="font-size:8px;background:#2d3f55;color:#8899aa;padding:1px 5px;border-radius:4px">圏外</span>'}
+      ${hasCond?'<span class="cond-btn">条件▾</span>':''}
+    </div>`;
+
+  wrap.appendChild(row);
+
+  if (hasCond) {
+    const panel = document.createElement('div');
+    panel.className = 'cond-panel';
+    panel.innerHTML =
+      (t.cond_through ? `<div class="cond-through">✅ 通過：${t.cond_through}</div>` : '') +
+      (t.cond_out     ? `<div class="cond-out">❌ 敗退：${t.cond_out}</div>`         : '');
+    wrap.appendChild(panel);
+    wrap.querySelector('.cond-btn').addEventListener('click', () => {
+      panel.classList.toggle('open');
+    });
+    // ホバー対応（PC）
+    row.addEventListener('mouseenter', () => panel.classList.add('open'));
+    row.addEventListener('mouseleave', () => panel.classList.remove('open'));
+  }
+
+  thirdStandings.appendChild(wrap);
+});
+
+// R32リスト
+const r32list = document.getElementById('r32-list');
+[...MATCHES].sort((a, b) => a.id - b.id).forEach(m => {
+  const card = document.createElement('div');
+  card.className = 'r32-card' + (m.jp ? ' jp' : '');
+  const nc = c => c==='yes'?'#22c55e':c==='est'?'#60a5fa':c==='sp'?'#c4b5fd':'#64748b';
+  const pre = c => c==='yes'?'◎':c==='est'?'★':'？';
+  card.innerHTML = `
+    <div class="r32-top"><span>${m.no} · ${m.date}</span>${m.jp?'<span class="jp-badge">🇯🇵</span>':''}</div>
+    <div class="r32-teams">
+      <div class="r32-team"><div class="r32-name" style="color:${nc(m.c1)}">${pre(m.c1)} ${m.t1}</div><div class="r32-sub">${m.s1}</div></div>
+      <div style="font-size:10px;color:#374151;font-weight:700;flex-shrink:0">vs</div>
+      <div class="r32-team right"><div class="r32-name" style="color:${nc(m.c2)}">${m.t2} ${pre(m.c2)}</div><div class="r32-sub">${m.s2}</div></div>
+    </div>`;
+  r32list.appendChild(card);
+});
+
+// 日本タブ
+(function() {
+  const j = JAPAN;
+  const r = j.r32;
+  const COL_PATH = { yes:'#e2e8f0', est:'#93c5fd' };
+  const matchCards = j.groupStage.matches.map((m, i) =>
+    `<div class="jp-result"><div class="ml">第${i+1}節 vs ${m.vs}</div><div class="sc" style="color:${m.color}">${m.result}</div></div>`
+  ).join('');
+
+  // 対戦候補ブロック
+  const pathBlocks = JAPAN_PATH.map(stage => {
+    const rows = [...stage.opponents]
+      .sort((a, b) => (a.rank||999) - (b.rank||999))
+      .map(o => {
+        const rankStr = o.rank ? 'FIFA ' + o.rank + '位' : '—';
+        return '<div class="path-row">'
+          + '<div class="path-rank">' + rankStr + '</div>'
+          + '<div class="path-name" style="color:' + (COL_PATH[o.conf]||'#e2e8f0') + '">' + o.name + '</div>'
+          + '<div class="path-desc">' + o.desc + '</div>'
+          + '</div>';
+      }).join('');
+    return '<div class="path-block">'
+      + '<div class="path-round">' + stage.round + ' <span style="color:#8899aa;font-weight:400">' + stage.matchNo + '</span></div>'
+      + '<div class="path-date">' + stage.date + '</div>'
+      + '<div class="path-note">' + stage.note + '</div>'
+      + '<div class="path-rows">' + rows + '</div>'
+      + '</div>';
+  }).join('');
+
+  document.getElementById('japan-content').innerHTML = `
+    <div class="jp-box">
+      <h2 style="font-size:12px;font-weight:800;color:#e63946;margin-bottom:10px;">🇯🇵 日本代表（グループF）</h2>
+      <div class="jp-results">${matchCards}</div>
+      <div style="background:#111520;border-radius:7px;padding:10px 12px;font-size:11px;color:#aab8c8;line-height:1.9;">
+        ${j.groupStage.summary}<br>
+        ${j.groupStage.detail}<br>
+        <strong style="color:#4ade80">${j.groupStage.milestone}</strong>
+      </div>
+    </div>
+    <div style="font-size:12px;font-weight:700;color:#3b82f6;margin-bottom:8px">📍 R32の対戦相手が確定！</div>
+    <div class="sc-card" style="border:1px solid #3b82f644;background:#0e1e38;margin-bottom:16px;">
+      <h3 style="color:#60a5fa">🇯🇵 日本 vs ${r.opponent}（${r.opponentDesc}）</h3>
+      <p>🗓 ${r.no}（${r.date}）<br>🏟 ${r.venue}<br>▶ ${r.nextNote}</p>
+    </div>
+    <div style="font-size:12px;font-weight:700;color:#3b82f6;margin-bottom:8px">🗺 勝ち進んだ場合の対戦候補（FIFAランク順）</div>
+    <div style="font-size:9px;color:#6b7e92;margin-bottom:10px;">※ランクは概算。<span style="color:#e2e8f0">白=確定</span>・<span style="color:#93c5fd">青=最有力予想</span></div>
+    ${pathBlocks}`;
+
+})();
+
+// SVGブラケット（縦型：左から右へ流れる、上半山→下半山）
+// 構造: R32(8試合) → R16(4試合) → QF(2試合) → SF(1試合) → 決勝
+// 上ブロック(M73-M80、旧左ブロック) と 下ブロック(M81-M88、旧右ブロック) を縦に並べる
+
+const BW=148, BH=58, GAP=10, RGAP=24, CW=20, CH=20;
+// 各ラウンドのX座標（左から右）
+const X_R32=0, X_R16=X_R32+BW+CW*2, X_QF=X_R16+BW+CW*2, X_SF=X_QF+BW+CW*2, X_FIN=X_SF+BW+CW*2;
+const SVG_W=X_FIN+BW+10;
+// 上ブロック：8試合を4ペアで配置
+const PAIR_H=BH*2+GAP;
+const BLOCK_H=PAIR_H*4+RGAP*3;
+const TOP_PAD=28; // ラウンドラベル分
+const BLOCK_GAP=60; // 上下ブロックの間隔
+const SVG_H=TOP_PAD+BLOCK_H*2+BLOCK_GAP+40;
+
+const LINE='#3d5573',GOLD='#d97706',JPC='#e63946';
+const COL={yes:'#22c55e',est:'#60a5fa',sp:'#c4b5fd'};
+const BGs={yes:'#0a1f10',est:'#0a1030',sp:'#1a0f2e'};
+const BDs={yes:'#16a34a',est:'#2563eb',sp:'#7c3aed'};
+
+const svg=document.getElementById('bracket-svg');
+svg.setAttribute('width',SVG_W); svg.setAttribute('height',SVG_H);
+function el(tag,at,par){ const e=document.createElementNS('http://www.w3.org/2000/svg',tag); for(const[k,v]of Object.entries(at))e.setAttribute(k,v); if(par)par.appendChild(e); return e; }
+function cl(s,n){ return s&&s.length>n?s.slice(0,n-1)+'…':(s||''); }
+
+// ブロック内のY座標計算（blockTop=ブロックの開始Y）
+function tY(pos, blockTop){ const pi=Math.floor(pos/2),ip=pos%2; return blockTop+pi*(PAIR_H+RGAP)+ip*(BH+GAP); }
+function mY(pos, blockTop){ return tY(pos,blockTop)+BH/2; }
+function pMid(i, blockTop){ return (mY(i*2,blockTop)+mY(i*2+1,blockTop))/2; }
+function r16Mid(i, blockTop){ return (pMid(i*2,blockTop)+pMid(i*2+1,blockTop))/2; }
+function qfMid(blockTop){ return (r16Mid(0,blockTop)+r16Mid(1,blockTop))/2; }
+
+const TOP_BLOCK = TOP_PAD;
+const BOT_BLOCK = TOP_PAD + BLOCK_H + BLOCK_GAP;
+// 決勝のY: 上下ブロックのQF中間
+const SF_TOP_Y = qfMid(TOP_BLOCK);
+const SF_BOT_Y = qfMid(BOT_BLOCK);
+const FIN_Y = (SF_TOP_Y + SF_BOT_Y) / 2 - BH/2;
+
+function drawMatch(x,y,m){
+  const hasSp=m.c1==='sp'||m.c2==='sp';
+  const dominant=hasSp?'sp':(m.c1==='yes'&&m.c2==='yes')?'yes':'est';
+  const g=el('g',{cursor:'pointer'},svg);
+  el('rect',{x,y,width:BW,height:BH,rx:5,ry:5,fill:BGs[dominant]||'#0e1520',stroke:BDs[dominant]||'#1d2d42','stroke-width':1.5},g);
+  const barBg=hasSp?'#160b30':m.jp?'#1f0608':'#0a1020';
+  el('rect',{x,y,width:BW,height:14,rx:5,ry:5,fill:barBg},g);
+  el('rect',{x,y:y+9,width:BW,height:5,fill:barBg},g);
+  const dtc=hasSp?'#c4b5fd':m.jp?'#f87171':'#60a5fa';
+  el('text',{x:x+6,y:y+10,'font-size':8.5,fill:dtc,'font-weight':700},g).textContent=m.date;
+  el('text',{x:x+BW-4,y:y+10,'font-size':7.5,fill:'#374151','font-weight':600,'text-anchor':'end'},g).textContent=m.no;
+  el('text',{x:x+5,y:y+26,'font-size':10,fill:COL[m.c1]||'#f1f5f9','font-weight':700},g).textContent=cl(m.t1,18);
+  el('text',{x:x+5,y:y+35,'font-size':7,fill:'#374151'},g).textContent=cl(m.s1,26);
+  el('line',{x1:x+4,y1:y+39,x2:x+BW-4,y2:y+39,stroke:hasSp?'#2a1050':'#151f2e','stroke-width':1},g);
+  el('text',{x:x+5,y:y+50,'font-size':10,fill:COL[m.c2]||'#f1f5f9','font-weight':700},g).textContent=cl(m.t2,18);
+  if(m.jp){
+    el('rect',{x:x+BW-24,y:y+1,width:22,height:11,rx:3,fill:JPC},g);
+    el('text',{x:x+BW-13,y:y+10,'font-size':7.5,fill:'white','font-weight':800,'text-anchor':'middle'},g).textContent='🇯🇵';
+  }
+  g.addEventListener('mouseenter',()=>showDetail(m));
+  g.addEventListener('mouseleave',hideDetail);
+}
+
+function drawEmpty(x,y,label,gold=false){
+  const g=el('g',{},svg);
+  el('rect',{x,y,width:BW,height:BH,rx:5,ry:5,fill:gold?'#100c00':'#090e18',stroke:gold?GOLD:'#1a2535','stroke-width':gold?2:1,'stroke-dasharray':gold?'none':'5 3'},g);
+  if(gold){ el('text',{x:x+BW/2,y:y+BH/2-7,'font-size':16,'text-anchor':'middle'},g).textContent='🏆'; }
+  el('text',{x:x+BW/2,y:y+BH/2+(gold?13:5),'font-size':10,fill:gold?GOLD:'#1e3050','font-weight':gold?800:400,'text-anchor':'middle'},g).textContent=label;
+}
+
+// 右向きコネクター（2試合→1試合）
+function connR(bTop,pi){ // pi=ペアインデックス(0-3)
+  const t=mY(pi*2,bTop), b=mY(pi*2+1,bTop), mid=(t+b)/2;
+  [[X_R32+BW,t,X_R32+BW+CW,t],[X_R32+BW,b,X_R32+BW+CW,b],
+   [X_R32+BW+CW,t,X_R32+BW+CW,b],[X_R32+BW+CW,mid,X_R32+BW+CW*2,mid]
+  ].forEach(([x1,y1,x2,y2])=>el('line',{x1,y1,x2,y2,stroke:LINE,'stroke-width':1.5},svg));
+}
+function connR16(bTop,qi){ // R16→QF
+  const t=pMid(qi*2,bTop), b=pMid(qi*2+1,bTop), mid=(t+b)/2;
+  [[X_R16+BW,t,X_R16+BW+CW,t],[X_R16+BW,b,X_R16+BW+CW,b],
+   [X_R16+BW+CW,t,X_R16+BW+CW,b],[X_R16+BW+CW,mid,X_R16+BW+CW*2,mid]
+  ].forEach(([x1,y1,x2,y2])=>el('line',{x1,y1,x2,y2,stroke:LINE,'stroke-width':1.5},svg));
+}
+function connQF(bTop){ // QF→SF
+  const t=r16Mid(0,bTop), b=r16Mid(1,bTop), mid=(t+b)/2;
+  [[X_QF+BW,t,X_QF+BW+CW,t],[X_QF+BW,b,X_QF+BW+CW,b],
+   [X_QF+BW+CW,t,X_QF+BW+CW,b],[X_QF+BW+CW,mid,X_QF+BW+CW*2,mid]
+  ].forEach(([x1,y1,x2,y2])=>el('line',{x1,y1,x2,y2,stroke:LINE,'stroke-width':1.5},svg));
+}
+
+// ── 描画 ──
+const lMs=MATCHES.filter(m=>m.side==='L').sort((a,b)=>a.pos-b.pos);
+const rMs=MATCHES.filter(m=>m.side==='R').sort((a,b)=>a.pos-b.pos);
+
+// 上ブロック（M73-M80）
+lMs.forEach(m=>drawMatch(X_R32,tY(m.pos,TOP_BLOCK),m));
+[0,1,2,3].forEach(i=>connR(TOP_BLOCK,i));
+[0,1,2,3].forEach(i=>drawEmpty(X_R16,pMid(i,TOP_BLOCK)-BH/2,`R16 7/${i<2?5:6}`));
+[0,1].forEach(i=>connR16(TOP_BLOCK,i));
+[0,1].forEach(i=>drawEmpty(X_QF,r16Mid(i,TOP_BLOCK)-BH/2,`QF 7/${i===0?10:11}`));
+connQF(TOP_BLOCK);
+drawEmpty(X_SF,qfMid(TOP_BLOCK)-BH/2,'SF① 7/14');
+
+// 下ブロック（M81-M88）
+rMs.forEach(m=>drawMatch(X_R32,tY(m.pos,BOT_BLOCK),m));
+[0,1,2,3].forEach(i=>connR(BOT_BLOCK,i));
+[0,1,2,3].forEach(i=>drawEmpty(X_R16,pMid(i,BOT_BLOCK)-BH/2,`R16 7/${i<2?7:8}`));
+[0,1].forEach(i=>connR16(BOT_BLOCK,i));
+[0,1].forEach(i=>drawEmpty(X_QF,r16Mid(i,BOT_BLOCK)-BH/2,`QF 7/${i===0?10:11}`));
+connQF(BOT_BLOCK);
+drawEmpty(X_SF,qfMid(BOT_BLOCK)-BH/2,'SF② 7/15');
+
+// SF→決勝のライン
+el('line',{x1:X_SF+BW,y1:SF_TOP_Y,x2:X_SF+BW+CW,y2:SF_TOP_Y,stroke:GOLD,'stroke-width':1.8},svg);
+el('line',{x1:X_SF+BW,y1:SF_BOT_Y,x2:X_SF+BW+CW,y2:SF_BOT_Y,stroke:GOLD,'stroke-width':1.8},svg);
+el('line',{x1:X_SF+BW+CW,y1:SF_TOP_Y,x2:X_SF+BW+CW,y2:SF_BOT_Y,stroke:GOLD,'stroke-width':1.8},svg);
+el('line',{x1:X_SF+BW+CW,y1:FIN_Y+BH/2,x2:X_FIN,y2:FIN_Y+BH/2,stroke:GOLD,'stroke-width':1.8},svg);
+drawEmpty(X_FIN,FIN_Y,'決勝 7/19',true);
+
+// ブロック境界線
+el('line',{x1:0,y1:TOP_BLOCK+BLOCK_H+BLOCK_GAP/2,x2:X_SF+BW,y2:TOP_BLOCK+BLOCK_H+BLOCK_GAP/2,stroke:'#1d2d42','stroke-width':1,'stroke-dasharray':'6 4'},svg);
+
+// ラウンドラベル（上部）
+[
+  [X_R32+BW/2,'R32'],[X_R16+BW/2,'R16'],[X_QF+BW/2,'QF'],[X_SF+BW/2,'SF'],[X_FIN+BW/2,'🏆FINAL']
+].forEach(([x,l])=>{ el('text',{x,y:16,'font-size':9,fill:l.includes('FINAL')?GOLD:'#2a3f5a','font-weight':800,'text-anchor':'middle'},svg).textContent=l; });
+
+// ブロックラベル
+el('text',{x:4,y:TOP_BLOCK+12,'font-size':9,fill:'#3d5573','font-weight':700},svg).textContent='▲ 上半山 (M73-M80)';
+el('text',{x:4,y:BOT_BLOCK+12,'font-size':9,fill:'#3d5573','font-weight':700},svg).textContent='▼ 下半山 (M81-M88)';
+
+// ホバー
+const panel=document.getElementById('detail-panel');
+function showDetail(m){
+  panel.className='has-data';
+  const hasSp=m.c1==='sp'||m.c2==='sp';
+  panel.style.borderColor=hasSp?'#7c3aed':m.jp?JPC:'#1d2d42';
+  panel.innerHTML=`<div class="dp-date">${m.no}<br>${m.date}</div>
+    <div class="dp-team"><div class="name" style="color:${COL[m.c1]||'#f1f5f9'}">${m.t1}</div><div class="sub">${m.s1}</div></div>
+    <div class="dp-vs">VS</div>
+    <div class="dp-team" style="text-align:right"><div class="name" style="color:${COL[m.c2]||'#f1f5f9'}">${m.t2}</div><div class="sub">${m.s2}</div></div>`;
+}
+function hideDetail(){ panel.className=''; panel.style.borderColor='#1d2d42'; panel.innerHTML='← 試合カードをホバーすると詳細が表示されます'; }
+function switchTab(id,btn){
+  document.querySelectorAll('.tab-content').forEach(e=>e.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(e=>e.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  if(btn)btn.classList.add('active');
+}
+</script>
+</body>
+</html>
